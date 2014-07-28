@@ -311,6 +311,82 @@ test 'Verify locations in string interpolation (in """string""", multiple interp
   eq c[2].last_line, 9
   eq c[2].last_column, 2
 
+
+
+test 'Verify locations in string interpolation (in "string", with some spaces)', ->
+  tokens = CoffeeScript.tokens '"\n   #{a}\n"'
+
+  eq tokens.length, 6
+  [{}, {}, {}, a] = tokens
+  console.log 1, a
+
+  eq a[2].first_line, 1
+  eq a[2].first_column, 5
+  eq a[2].last_line, 1
+  eq a[2].last_column, 5
+
+test 'Verify locations in string interpolation (in """string""", with some spaces)', ->
+  tokens = CoffeeScript.tokens '"""\n   #{a}\n"""'
+
+  eq tokens.length, 6
+  [{}, {}, {}, a] = tokens
+  console.log 2, a
+
+  eq a[2].first_line, 1
+  eq a[2].first_column, 5
+  eq a[2].last_line, 1
+  eq a[2].last_column, 5
+
+test 'Verify locations in string interpolation (in "string", indented without any space)', ->
+  tokens = CoffeeScript.tokens '  "\n  #{a}\n  "'
+
+  eq tokens.length, 6
+  [{}, {}, {}, a] = tokens
+  console.log 3, a
+
+  eq a[2].first_line, 1
+  eq a[2].first_column, 4
+  eq a[2].last_line, 1
+  eq a[2].last_column, 4
+
+test 'Verify locations in string interpolation (in "string", indented with some spaces)', ->
+  tokens = CoffeeScript.tokens '  "\n     #{a}\n  "'
+
+  eq tokens.length, 6
+  [{}, {}, {}, a] = tokens
+  console.log 4, a
+
+  eq a[2].first_line, 1
+  eq a[2].first_column, 7
+  eq a[2].last_line, 1
+  eq a[2].last_column, 7
+
+test 'Verify locations in string interpolation (in """string""", indented without any space)', ->
+  tokens = CoffeeScript.tokens '  """\n  #{a}\n  """'
+
+  eq tokens.length, 6
+  [{}, {}, {}, a] = tokens
+  console.log 5, a
+
+  eq a[2].first_line, 1
+  eq a[2].first_column, 4
+  eq a[2].last_line, 1
+  eq a[2].last_column, 4
+
+test 'Verify locations in string interpolation (in """string""", indented with some spaces)', ->
+  tokens = CoffeeScript.tokens '  """\n     #{a}\n  """'
+
+  eq tokens.length, 6
+  [{}, {}, {}, a] = tokens
+  console.log 6, a
+
+  eq a[2].first_line, 1
+  eq a[2].first_column, 7
+  eq a[2].last_line, 1
+  eq a[2].last_column, 7
+
+
+
 test 'Verify locations in heregex interpolation (in ///regex///, multiple interpolation)', ->
   tokens = CoffeeScript.tokens '///#{a}b#{c}///'
 
