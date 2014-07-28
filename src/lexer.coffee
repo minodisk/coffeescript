@@ -531,6 +531,8 @@ exports.Lexer = class Lexer
   #  - `options.strOffset` is the offset of str, relative to the start of the
   #    current chunk.
   interpolateString: (str, options = {}) ->
+    console.log str.replace(/[ ]/g, '.').replace(/\r?\n/g, '-') if global.debug
+
     {heredoc, regex, offsetInChunk, strOffset, lexedLength} = options
     offsetInChunk ||= 0
     strOffset ||= 0
