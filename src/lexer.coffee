@@ -196,6 +196,9 @@ exports.Lexer = class Lexer
       numBreak = pos = 0
       innerLen = inner.length
       numBreak++ while inner.charAt(pos++) is '\n' and pos < innerLen
+      if numBreak isnt 0
+        pos--
+        numBreak++ while inner.charAt(pos++) in ['\n', ' '] and pos < innerLen
       @interpolateString trimmed, strOffset: 1 + numBreak, lexedLength: string.length
     else
       @token 'STRING', quote + @escapeLines(trimmed) + quote, 0, string.length
@@ -212,6 +215,7 @@ exports.Lexer = class Lexer
     doc = @sanitizeHeredoc match[2], quote: quote, indent: null
     if quote is '"' and 0 <= doc.indexOf '#{'
       strOffset = if match[2].charAt(0) is '\n' then 4 else 3
+      # console.log 'hredoc:', heredoc, doc if global.debug
       @interpolateString doc, heredoc: yes, strOffset: strOffset, lexedLength: heredoc.length
     else
       @token 'STRING', @makeString(doc, quote, yes), 0, heredoc.length
@@ -531,7 +535,7 @@ exports.Lexer = class Lexer
   #  - `options.strOffset` is the offset of str, relative to the start of the
   #    current chunk.
   interpolateString: (str, options = {}) ->
-    console.log str.replace(/[ ]/g, '.').replace(/\r?\n/g, '-') if global.debug
+    console.log str.replace(/[ ]/g, '.').replace(/\r?\n/g, '-'), @indent, @indents, options.strOffset, options.offsetInChunk if global.debug
 
     {heredoc, regex, offsetInChunk, strOffset, lexedLength} = options
     offsetInChunk ||= 0

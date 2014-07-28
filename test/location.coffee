@@ -313,34 +313,100 @@
 #
 #
 #
-test 'Verify locations in string interpolation (in "string", with some spaces)', ->
-  global.debug = true
-  tokens = CoffeeScript.tokens '  ///\n     #{a}\n  ///'
-  tokens = CoffeeScript.tokens '"""\n   #{a}\n"""'
-  tokens = CoffeeScript.tokens '"\n   #{a}\n"'
-  global.debug = false
+test 'Verify locations in string interpolation (in "string", starting with some spaces)', ->
+  tokens = CoffeeScript.tokens '"   #{a}   #{b}\n     #{c}     #{d}\n"'
 
-  eq tokens.length, 6
-  [{}, {}, {}, a] = tokens
-  console.log 1, a
+  eq tokens.length, 18
+  [{}, {}, {}, a, {}, {}, {}, b, {}, {}, {}, c, {}, {}, {}, d] = tokens
+
+  eq a[2].first_line, 0
+  eq a[2].first_column, 6
+  eq a[2].last_line, 0
+  eq a[2].last_column, 6
+  eq b[2].first_line, 0
+  eq b[2].first_column, 13
+  eq b[2].last_line, 0
+  eq b[2].last_column, 13
+  eq c[2].first_line, 1
+  eq c[2].first_column, 7
+  eq c[2].last_line, 1
+  eq c[2].last_column, 7
+  eq d[2].first_line, 1
+  eq d[2].first_column, 16
+  eq d[2].last_line, 1
+  eq d[2].last_column, 16
+
+test 'Verify locations in string interpolation (in "string", contains some spaces starting with linebreak)', ->
+  tokens = CoffeeScript.tokens '"\n   #{a}   #{b}\n     #{c}     #{d}\n"'
+
+  eq tokens.length, 18
+  [{}, {}, {}, a, {}, {}, {}, b, {}, {}, {}, c, {}, {}, {}, d] = tokens
 
   eq a[2].first_line, 1
   eq a[2].first_column, 5
   eq a[2].last_line, 1
   eq a[2].last_column, 5
-#
+  eq b[2].first_line, 1
+  eq b[2].first_column, 12
+  eq b[2].last_line, 1
+  eq b[2].last_column, 12
+  eq c[2].first_line, 2
+  eq c[2].first_column, 7
+  eq c[2].last_line, 2
+  eq c[2].last_column, 7
+  eq d[2].first_line, 2
+  eq d[2].first_column, 16
+  eq d[2].last_line, 2
+  eq d[2].last_column, 16
+
+test 'Verify locations in string interpolation (in "string", contains some spaces starting with linebreak)', ->
+  tokens = CoffeeScript.tokens '"\n \n   #{a}   #{b}\n     #{c}     #{d}\n"'
+
+  eq tokens.length, 18
+  [{}, {}, {}, a, {}, {}, {}, b, {}, {}, {}, c, {}, {}, {}, d] = tokens
+
+  eq a[2].first_line, 2
+  eq a[2].first_column, 5
+  eq a[2].last_line, 2
+  eq a[2].last_column, 5
+  eq b[2].first_line, 2
+  eq b[2].first_column, 12
+  eq b[2].last_line, 2
+  eq b[2].last_column, 12
+  eq c[2].first_line, 3
+  eq c[2].first_column, 7
+  eq c[2].last_line, 3
+  eq c[2].last_column, 7
+  eq d[2].first_line, 3
+  eq d[2].first_column, 16
+  eq d[2].last_line, 3
+  eq d[2].last_column, 16
+
 # test 'Verify locations in string interpolation (in """string""", with some spaces)', ->
-#   tokens = CoffeeScript.tokens '"""\n   #{a}\n"""'
+#   global.debug = true
+#   tokens = CoffeeScript.tokens '"""\n   #{a}   #{b}\n     #{c}     #{d}\n"""'
+#   global.debug = false
 #
-#   eq tokens.length, 6
-#   [{}, {}, {}, a] = tokens
-#   console.log 2, a
+#   eq tokens.length, 18
+#   [{}, {}, {}, a, {}, {}, {}, b, {}, {}, {}, c, {}, {}, {}, d] = tokens
 #
 #   eq a[2].first_line, 1
 #   eq a[2].first_column, 5
 #   eq a[2].last_line, 1
 #   eq a[2].last_column, 5
-#
+#   eq b[2].first_line, 1
+#   eq b[2].first_column, 12
+#   eq b[2].last_line, 1
+#   eq b[2].last_column, 12
+#   eq c[2].first_line, 2
+#   eq c[2].first_column, 7
+#   eq c[2].last_line, 2
+#   eq c[2].last_column, 7
+#   eq d[2].first_line, 2
+#   eq d[2].first_column, 16
+#   eq d[2].last_line, 2
+#   eq d[2].last_column, 16
+
 # test 'Verify locations in string interpolation (in "string", indented without any space)', ->
 #   tokens = CoffeeScript.tokens '  "\n  #{a}\n  "'
 #
