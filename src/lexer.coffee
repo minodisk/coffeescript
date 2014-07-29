@@ -193,13 +193,11 @@ exports.Lexer = class Lexer
     inner = string[1...-1]
     trimmed = @removeNewlines inner
     if quote is '"' and 0 < string.indexOf '#{', 1
-      numBreak = pos = 0
-      innerLen = inner.length
-      numBreak++ while inner.charAt(pos++) is '\n' and pos < innerLen
-      if numBreak isnt 0
-        pos--
-        numBreak++ while inner.charAt(pos++) in ['\n', ' '] and pos < innerLen
-      @interpolateString trimmed, strOffset: 1 + numBreak, lexedLength: string.length
+      strOffset = if (match = inner.match /^[ ]+\n+[\n ]+|^\n+[\n ]*/)?
+        match[0].length
+      else
+        0
+      @interpolateString trimmed, strOffset: 1 + strOffset, lexedLength: string.length
     else
       @token 'STRING', quote + @escapeLines(trimmed) + quote, 0, string.length
     if octalEsc = /^(?:\\.|[^\\])*\\(?:0[0-7]|[1-7])/.test string
@@ -535,7 +533,7 @@ exports.Lexer = class Lexer
   #  - `options.strOffset` is the offset of str, relative to the start of the
   #    current chunk.
   interpolateString: (str, options = {}) ->
-    console.log str.replace(/[ ]/g, '.').replace(/\r?\n/g, '-'), @indent, @indents, options.strOffset, options.offsetInChunk if global.debug
+    # console.log str.replace(/[ ]/g, '.').replace(/\r?\n/g, '-'), @indent, @indents, options.strOffset, options.offsetInChunk if global.debug
 
     {heredoc, regex, offsetInChunk, strOffset, lexedLength} = options
     offsetInChunk ||= 0
