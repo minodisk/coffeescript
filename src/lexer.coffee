@@ -193,7 +193,7 @@ exports.Lexer = class Lexer
     inner = string[1...-1]
     trimmed = @removeNewlines inner
     if quote is '"' and 0 < string.indexOf '#{', 1
-      strOffset = if (match = inner.match /^[ ]+\n+[\n ]+|^\n+[\n ]*/)?
+      strOffset = if (match = inner.match /^\n+[\n ]*|^[ ]+\n+[\n ]+/)?
         match[0].length
       else
         0
@@ -212,9 +212,12 @@ exports.Lexer = class Lexer
     quote = heredoc.charAt 0
     doc = @sanitizeHeredoc match[2], quote: quote, indent: null
     if quote is '"' and 0 <= doc.indexOf '#{'
-      strOffset = if match[2].charAt(0) is '\n' then 4 else 3
-      # console.log 'hredoc:', heredoc, doc if global.debug
-      @interpolateString doc, heredoc: yes, strOffset: strOffset, lexedLength: heredoc.length
+      # strOffset = if match[2].charAt(0) is '\n' then 4 else 3
+      strOffset = if (match = match[2].match /^\n+([ ]*)/)?
+        1 + match[1].length
+      else
+        0
+      @interpolateString doc, heredoc: yes, strOffset: 3 + strOffset, lexedLength: heredoc.length
     else
       @token 'STRING', @makeString(doc, quote, yes), 0, heredoc.length
     heredoc.length
