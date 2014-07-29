@@ -336,6 +336,30 @@ test 'Verify locations in string interpolation (in "string", starting with some 
   eq d[2].last_line, 1
   eq d[2].last_column, 16
 
+test 'Verify locations in string interpolation (in "string", starting with some spaces and linebreak)', ->
+  tokens = CoffeeScript.tokens '"  \n   #{a}   #{b}\n     #{c}     #{d}\n"'
+
+  eq tokens.length, 18
+  [{}, {}, {}, a, {}, {}, {}, b, {}, {}, {}, c, {}, {}, {}, d] = tokens
+  console.log a,b,c,d
+
+  eq a[2].first_line, 1
+  eq a[2].first_column, 5
+  eq a[2].last_line, 1
+  eq a[2].last_column, 5
+  eq b[2].first_line, 1
+  eq b[2].first_column, 12
+  eq b[2].last_line, 1
+  eq b[2].last_column, 12
+  eq c[2].first_line, 2
+  eq c[2].first_column, 7
+  eq c[2].last_line, 2
+  eq c[2].last_column, 7
+  eq d[2].first_line, 2
+  eq d[2].first_column, 16
+  eq d[2].last_line, 2
+  eq d[2].last_column, 16
+
 test 'Verify locations in string interpolation (in "string", contains some spaces starting with linebreak)', ->
   tokens = CoffeeScript.tokens '"\n   #{a}   #{b}\n     #{c}     #{d}\n"'
 
@@ -360,7 +384,7 @@ test 'Verify locations in string interpolation (in "string", contains some space
   eq d[2].last_column, 16
 
 test 'Verify locations in string interpolation (in "string", contains some spaces starting with linebreak)', ->
-  tokens = CoffeeScript.tokens '"\n \n   #{a}   #{b}\n     #{c}     #{d}\n"'
+  tokens = CoffeeScript.tokens '"\n  \n   #{a}   #{b}\n     #{c}     #{d}\n"'
 
   eq tokens.length, 18
   [{}, {}, {}, a, {}, {}, {}, b, {}, {}, {}, c, {}, {}, {}, d] = tokens
